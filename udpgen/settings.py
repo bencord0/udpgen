@@ -107,12 +107,13 @@ LOGGING = {
 	'simple': {
 	    'format': '%(asctime)s: %(message)s',
 	},
-    }
+    },
     'loggers': {
         'django': {
 	    'handlers': ['stream'],
-	    'level': 'DEBUG' if DEBUG else 'INFO',
-	    'propagate': True
+	    'level': 'INFO' if DEBUG else 'WARNING',
+	    'propagate': True,
+	},
         'udpgen': {
             'handlers': ['stream', 'syslog'],
             'level': 'DEBUG' if DEBUG else 'INFO',
