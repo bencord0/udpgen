@@ -102,7 +102,7 @@ LOGGING = {
     },
     'formatters': {
         'verbose': {
-	    'format': '%(levelname)s %(asctime)s %(module)s %(func)s: %(message)s',
+	    'format': '%(levelname)s %(asctime)s %(module)s: %(message)s',
 	},
 	'simple': {
 	    'format': '%(asctime)s: %(message)s',
@@ -119,8 +119,15 @@ LOGGING = {
             'level': 'DEBUG' if DEBUG else 'INFO',
             'propagate': True,
         },
-    }
+    },
+    'root': {
+        'handlers': ['stream'],
+	'level': 'DEBUG' if DEBUG else 'WARNING',
+    },
 }
+import logging.config
+logging.config.dictConfig(LOGGING)
+
 
 # Specify a port, or use a random port to receive udp streams.
 UDPGEN_LISTEN_PORT = os.environ.get('UDPGEN_LISTEN_PORT', 0)
