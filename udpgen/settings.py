@@ -121,3 +121,6 @@ LOGGING = {
         },
     }
 }
+
+# Specify a port, or use a random port to receive udp streams.
+UDPGEN_LISTEN_PORT = os.environ.get('UDPGEN_LISTEN_PORT', 0)
