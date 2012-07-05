@@ -128,6 +128,9 @@ LOGGING = {
 import logging.config
 logging.config.dictConfig(LOGGING)
 
+# Write to this socket to control the generation daemon.
+# For starting and stopping udp streams.
+UDPGEN_CONTROL_SOCKET = os.environ.get('UDPGEN_CONTROL_SOCKET', os.path.join(ROOT, 'udpgenctl.sock'))
 
 # Specify a port, or use a random port to receive udp streams.
 UDPGEN_LISTEN_PORT = os.environ.get('UDPGEN_LISTEN_PORT', 0)
