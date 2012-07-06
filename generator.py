@@ -17,21 +17,21 @@ def send_udp(host, port, bw=100, rate=3):
     source = open("/dev/urandom", "r")
     while True:
         data = source.read(bw_r)
-	log.debug("%d bytes to %s: %s" % (
-	    len(data),
-	    host,
-	    ''.join([hex(ord(c))[2:] for c in data])
-	))
-	s.sendto(data, host[4])
-	sleep(wait)
+    log.debug("%d bytes to %s: %s" % (
+        len(data),
+        host,
+        ''.join([hex(ord(c))[2:] for c in data])
+    ))
+    s.sendto(data, host[4])
+    sleep(wait)
 
 def create_ctl_sock():
     s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
     def cleanup_ctl_sock():
         try:
             os.remove(settings.UDPGEN_CONTROL_SOCKET)
-	except:
-	    pass
+    except:
+        pass
     cleanup_ctl_sock()
     s.bind(settings.UDPGEN_CONTROL_SOCKET)
     atexit.register(cleanup_ctl_sock)
@@ -45,8 +45,8 @@ if __name__ == '__main__':
     while True:
         conn, addr = s.accept()
         ctl_buf += conn.recv(4096)
-	# Currently, do nothing. TODO open and close udp flows on command.
-	# for now, dont memory leak.
-	ctl_buf = ""
+        # Currently, do nothing. TODO open and close udp flows on command.
+        # for now, dont memory leak.
+    	ctl_buf = ""
 
 
