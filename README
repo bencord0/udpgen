@@ -11,7 +11,7 @@ The Generator
 Generates udp packets and sends them... somewhere. UDP is connectionless, the other end
 does not even have to exist.
 
-Eventually flows can be added using a unix control socket (probably attached to a django
+The flows can be added using a unix control socket (probably attached to a django
 web front-end).
 
 run `python -i generator' and it will start listening to the control socket. But that is
