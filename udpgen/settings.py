@@ -122,7 +122,7 @@ LOGGING = {
     },
     'root': {
         'handlers': ['stream'],
-	'level': 'DEBUG' if DEBUG else 'WARNING',
+	'level': 'DEBUG' if DEBUG else 'INFO',
     },
 }
 import logging.config

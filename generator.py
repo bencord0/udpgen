@@ -21,6 +21,7 @@ def send_udp(host, port, stopping, bw=100, rate=3):
     bw_r = int(bw/rate)
     wait = 1.0/rate
     source = open("/dev/urandom", "r")
+    log.info("Starting stream to %s:%s" %(host[4][0], host[4][1]))
     while not stopping.is_set():
         data = source.read(bw_r)
         log.debug("%d bytes to %s: %s" % (
@@ -30,23 +31,22 @@ def send_udp(host, port, stopping, bw=100, rate=3):
         ))
         s.sendto(data, host[4])
         sleep(wait)
-    log.info("Stream to %s:%s dead" % (host[4][0], host[4][1]))
+    log.info("Closed stream to %s:%s" % (host[4][0], host[4][1]))
 
-def create_ctl_sock(ctrl_sock=settings.UDPGEN_CONTROL_SOCKET):
+def create_ctl_sock(ctrl_sock):
     s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
     def cleanup_ctl_sock(ctrl_sock):
         try:
             os.remove(ctrl_sock)
-        except:
-            pass
+            log.info("Cleaned up control socket: %s" % ctrl_sock)
+        except: pass
     cleanup_ctl_sock(ctrl_sock)
-    s.bind(ctrl_sock)
-    s.listen(1)
+    s.bind(ctrl_sock); s.listen(1)
     atexit.register(cleanup_ctl_sock, ctrl_sock)
     return s
 
 def run_command(mode=None, host=None, port=None, **others):
-    log.info("running command: mode=%s, host=%s, port=%s" % (mode, host, port))
+    log.debug("running command: mode=%s, host=%s, port=%s" % (mode, host, port))
     if mode == None or host == None or port == None:
         log.error("Invalid command: %r %r %r %r" % (mode, host, port, others))
         return
@@ -55,16 +55,14 @@ def run_command(mode=None, host=None, port=None, **others):
         t = threading.Thread(target=send_udp, args=(host, int(port), t_stop))
         t.daemon =  True # Die on exit
         t.start()
-        log.info("Started sending to %s:%d" % (host, int(port)))
+        log.info("Started thread for flow to %s:%d" % (host, int(port)))
         UDP_THREADS.append(("%s:%s"%(host,port), t, t_stop))
         return
     if mode == '-':
       for u_t in UDP_THREADS:
-        log.debug("Searching for %s:%s: %s" % (host, port, u_t[0]))
         if u_t[0] == "%s:%s"%(host,port):
-            log.info("Stopping thread: %s" % u_t[1])
+            log.debug("Stopping thread: %s" % u_t[1])
             u_t[2].set()
-            log.info("Stopped sending to %s:%d" % (host, int(port)))
             return
         log.error("Could not find (%s:%s) in %s" % (host, port, UDP_THREADS))
         
@@ -79,7 +77,7 @@ if __name__ == '__main__':
     while True:
         try:
             s = create_ctl_sock(sock_name)
-            log.debug("Listening on %s" % sock_name)
+            log.info("Listening on %s" % sock_name)
         except socket.error:
             log.error("Unable to open control socket %s")
             s = None
