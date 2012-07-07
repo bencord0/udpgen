@@ -1,0 +1,56 @@
+A simple UDP endpoint that can create and listen to UDP streams.
+
+The Listener
+============
+run `python listener.py' and it will bind to a ipv4 and a ipv6 udp port
+You can explicitly use a specific port by setting the UDPGEN_LISTEN_PORT in the environmnet.
+Alternatively, provide the port on the command line.
+
+The Generator
+=============
+Generates udp packets and sends them... somewhere. UDP is connectionless, the other end
+does not even have to exist.
+
+Eventually flows can be added using a unix control socket (probably attached to a django
+web front-end).
+
+run `python -i generator' and it will start listening to the control socket. But that is
+not very useful for now. So Ctrl+C out of the __main__ loop and create the flow by hand.
+
+The generator control socket
+============================
+The generator is listening on a local unix control socket.
+A command is a single '\n' terminated line.
+The format of a command is consistent with this regexp
+(?<mode>[+-])(?P<host>[\d\w:-\.]) (?P<port>\d+)
+
+mode == + is a command to start a udp flow
+mode == - is a command to stop a udp flow
+host is any IPv4, IPv6 or resolvable hostname
+port is the udp port to send it to.
+
+Extra configuration
+===================
+Set the environmental variable `DEBUG' to 'True' before running the programs.
+example:
+    $ DEBUG=True python listener.py
+
+Usage
+=====
+1/. Start the listener
+ $ DEBUG=True python listener.py 7000
+
+2/. In another shell, start the generator
+ $ DEBUG=True python generator.py
+
+3/. Send the generator commands via the unix socket.
+ $ python
+ >>> import socket
+ >>> s=socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+ >>> s.connect("udpgenctl.sock")
+ >>> s.send("+127.0.0.1 7000")
+ >>> s.send("-127.0.0.1 7000")
+
+ Since UDP is connectionless, there doesn't need to be a listener on the other side.
+ This is useful for general purpose traffic generation/pipe testing.
+
