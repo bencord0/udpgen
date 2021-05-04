@@ -48,5 +48,5 @@ if __name__ == '__main__':
 
     while True:
         r, w, x = select.select(open_sockets, [], [])
-	data, addr = r[0].recvfrom(4096)
-	receive_data(addr, data)
+    data, addr = r[0].recvfrom(4096)
+    receive_data(addr, data)
